@@ -10,6 +10,7 @@ import javax.swing.event.*;
 import javax.swing.ImageIcon.*;
 import java.util.Random;
 
+// author : Kwak Dowon 2019312044
 class HowTto extends JFrame {
 	HowTto() {
 		setTitle("How to play");
@@ -27,6 +28,7 @@ class HowTto extends JFrame {
 }
 
 class Frame extends JFrame {
+	// author : Kwak Dowon 2019312044
 	int Gold = 10;
 	int StorageCount = 0;
 	String Mode = "battle"; // default mode
@@ -54,6 +56,7 @@ class Frame extends JFrame {
 	int[] RoundTarget = {5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120};
 	int round = 0;
 
+	// author : Kwak Dowon 2019312044
 	void setStat(int[][] statTableInput) {
 		for(int loopBool = 0; loopBool < 7; loopBool++) {
 			SynergyTable[loopBool] = 0;
@@ -178,6 +181,7 @@ class Frame extends JFrame {
 		statTableInput[36][1] = 5;
 	}
 
+	// author : Kwak Dowon 2019312044
 	void refreshShop() {
 		int kindsOfCard = 37; // 카드 종류의 갯수
 		Random generator = new Random();
@@ -186,6 +190,7 @@ class Frame extends JFrame {
 		}
 	}
 
+	// author : Kwak Dowon 2019312044
 	void CheckSynergy() {
 		//reset SynergyTable for re-check
 		for(int loopBool = 0; loopBool < 7; loopBool++) {
@@ -242,7 +247,9 @@ class Frame extends JFrame {
 		}
 	}
 
+	// author : Kwak Dowon 2019312044 && Yang Sejung 2019313024
 	Frame(int[] ShopArr, int[] StorageArr, int[] FieldArr) {
+		// author : Yang Sejung 2019313024
 		tempShopArr = ShopArr;
 		tempStorageArr = StorageArr;
 		tempFieldArr = FieldArr;
@@ -252,7 +259,6 @@ class Frame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
 
-		//TaskPerformance text
 		JLabel text1 = new JLabel("Task Performance");
 		text1.setFont(text1.getFont().deriveFont(20.0f));
 		text1.setBounds(135, 600, 200, 20);
@@ -263,21 +269,24 @@ class Frame extends JFrame {
 		tp.setBounds(210,640,200,20);
 		add(tp);
 
-		//Round text
+
 		JLabel text3 = new JLabel("Round");
 		text3.setFont(text3.getFont().deriveFont(20.0f));
 		text3.setBounds(460,50,200,20);
 		add(text3);
 
+		// author : Kwak Dowon 2019312044 && Yang Sejung 2019313024
 		ModeText = new JLabel(Mode);
 		ModeText.setFont(ModeText.getFont().deriveFont(20.0f));
 		ModeText.setBounds(930,50,200,20);
 		add(ModeText);
 
+		// author : Yang Sejung 2019313024
 		r = new JLabel(Integer.toString(round+1));
 		r.setBounds(550,50,200,20);
 		add(r);
 
+		// author : Kwak Dowon 2019312044
 		JLabel textGold = new JLabel("Gold");
 		textGold.setFont(textGold.getFont().deriveFont(20.0f));
 		textGold.setBounds(1350,50,200,20);
@@ -287,6 +296,7 @@ class Frame extends JFrame {
 		goldNum.setBounds(1430,50,200,20);
 		add(goldNum);
 
+		// author : Yang Sejung 2019313024
 		//mode button
 		JButton pb = new JButton("purchase mode");
 		pb.addActionListener(new purchaseButtonListener());
@@ -320,9 +330,8 @@ class Frame extends JFrame {
 			add(shop[i]);
 		}
 
-		//storage image
+		// author : Kwak Dowon 2019312044 && Yang Sejung 2019313024
 		storage = new JButton[10];
-		//ImageIcon storageimage = new ImageIcon("src/image/storage.png");
 		int checkLine = 0;
 		for(int i=0; i<10; i++)
 		{
@@ -354,7 +363,7 @@ class Frame extends JFrame {
 			}
 		}
 
-		//field image
+		// author : Kwak Dowon 2019312044 && Yang Sejung 2019313024
 		field = new JButton[3];
 		for(int i=0; i<3; i++)
 		{
@@ -381,6 +390,7 @@ class Frame extends JFrame {
 			}
 		}
 
+		// author : Kwak Dowon 2019312044
 		SynergyArea = new JLabel[8];
 
 		JLabel SynergyNoti = new JLabel("Synergy STEP : 0, 1, 2");
@@ -410,8 +420,6 @@ class Frame extends JFrame {
 		SynergyArea[7].setFont(SynergyArea[7].getFont().deriveFont(20.0f));
 		SynergyArea[7].setBounds(1550,460,300,30);
 
-
-
 		JLabel curSynergy2 = new JLabel("possible Synergy , only this round");
 		curSynergy2.setFont(curSynergy2.getFont().deriveFont(20.0f));
 		curSynergy2.setBounds(1550,660,400,30);
@@ -431,7 +439,7 @@ class Frame extends JFrame {
 		add(SynergyArea[6]);
 		add(SynergyArea[7]);
 
-		//enemy image
+		// author : Yang Sejung 2019313024
 		ImageIcon enemy = new ImageIcon("src/image/enemy/" + (round+1) + ".PNG");
 		Image temp = enemy.getImage();
 		Image changedTemp = temp.getScaledInstance(300,200,Image.SCALE_SMOOTH);
@@ -440,23 +448,24 @@ class Frame extends JFrame {
 		imagelabel2.setBounds(460,120,300,200);
 		add(imagelabel2);
 
-		//vs text
+		// author : Yang Sejung 2019313024
 		JLabel text4 = new JLabel("VS");
 		text4.setBounds(850,210,200,20);
 		add(text4);
 
-		// submit button
+		// author : Kwak Dowon 2019312044
 		JButton submit = new JButton("submit");
 		submit.setBounds(1550,830,150,50);
 		submit.addActionListener(new submitButtonLister());
 		add(submit);
 
+		// author : Kwak Dowon 2019312044
 		JButton howto = new JButton("how to play");
 		howto.addActionListener(new howtoButtonListner());
 		howto.setBounds(1700,830,150,50);
 		add(howto);
 
-		//wallpaper image
+		// author : Yang Sejung 2019313024
 		ImageIcon wallpapers = new ImageIcon("src/image/white.png");
 		Image temp2 = wallpapers.getImage();
 		Image changedTemp2 = temp2.getScaledInstance(1920,1000,Image.SCALE_SMOOTH);
@@ -469,7 +478,7 @@ class Frame extends JFrame {
 		setVisible(true);
 	}
 
-	//update
+	// author : Kwak Dowon 2019312044
 	class Update {
 		public void updateStore(int index) {
 			ImageIcon icon = new ImageIcon("src/image/"+Integer.toString(tempShopArr[index]) + ".PNG");
@@ -623,7 +632,7 @@ class Frame extends JFrame {
 			updateAllStore();
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class purchaseButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -633,7 +642,7 @@ class Frame extends JFrame {
 			repaint();
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class battleButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -643,7 +652,7 @@ class Frame extends JFrame {
 			repaint();
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class saleButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -653,7 +662,7 @@ class Frame extends JFrame {
 			repaint();
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class submitButtonLister implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -675,14 +684,14 @@ class Frame extends JFrame {
 			}
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class howtoButtonListner implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			new HowTto();
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class ShopButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -720,7 +729,7 @@ class Frame extends JFrame {
 			}
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class StorageButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -770,7 +779,7 @@ class Frame extends JFrame {
 			}
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class FieldButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -804,7 +813,7 @@ class Frame extends JFrame {
 			}
 		}
 	}
-
+	// author : Kwak Dowon 2019312044
 	class Debug {
 		public void ShowArr() {
 			System.out.println("tempStorageArr");
