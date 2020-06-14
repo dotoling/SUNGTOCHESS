@@ -10,12 +10,29 @@ import javax.swing.event.*;
 import javax.swing.ImageIcon.*;
 import java.util.Random;
 
+class HowTto extends JFrame {
+	HowTto() {
+		setTitle("How to play");
+		ImageIcon iconName = new ImageIcon("src/image/howto.png");
+		Image temp = iconName.getImage();
+		Image changedTemp = temp.getScaledInstance(1100,380,Image.SCALE_SMOOTH);
+		ImageIcon newIcon = new ImageIcon(changedTemp);
+		JLabel newLabel = new JLabel(newIcon);
+		newLabel.setBounds(0,0,1100,380);
+		add(newLabel);
+		setSize(1100,480);
+		setResizable(false);
+		setVisible(true);
+	}
+}
+
 class Frame extends JFrame {
 	int Gold = 10;
 	int StorageCount = 0;
 	String Mode = "battle"; // default mode
 	int[][] StatTable = new int[37][3];
-
+	String curSyn = "language synergy";
+	JLabel curSynergy;
 	JButton[] shop;
 	JButton[] storage;
 	JButton[] field;
@@ -249,7 +266,7 @@ class Frame extends JFrame {
 		//Round text
 		JLabel text3 = new JLabel("Round");
 		text3.setFont(text3.getFont().deriveFont(20.0f));
-		text3.setBounds(260,50,200,20);
+		text3.setBounds(460,50,200,20);
 		add(text3);
 
 		ModeText = new JLabel(Mode);
@@ -258,16 +275,16 @@ class Frame extends JFrame {
 		add(ModeText);
 
 		r = new JLabel(Integer.toString(round+1));
-		r.setBounds(340,50,200,20);
+		r.setBounds(550,50,200,20);
 		add(r);
 
 		JLabel textGold = new JLabel("Gold");
 		textGold.setFont(textGold.getFont().deriveFont(20.0f));
-		textGold.setBounds(1500,50,200,20);
+		textGold.setBounds(1350,50,200,20);
 		add(textGold);
 
 		goldNum = new JLabel(Integer.toString(Gold));
-		goldNum.setBounds(1580,50,200,20);
+		goldNum.setBounds(1430,50,200,20);
 		add(goldNum);
 
 		//mode button
@@ -288,7 +305,7 @@ class Frame extends JFrame {
 
 		//shop image
 		shop = new JButton[5];
-		ImageIcon image = new ImageIcon("src/image/image.png");
+
 		for(int i=0; i<5; i++)
 		{
 			// img 의 이름은 곧 카드의 번호
@@ -366,34 +383,43 @@ class Frame extends JFrame {
 
 		SynergyArea = new JLabel[8];
 
-		JLabel SynergyNoti = new JLabel(" 0 : 시너지 없음 // 1 : 1단계 시너지 // 2 : 2단계 시너지");
+		JLabel SynergyNoti = new JLabel("Synergy STEP : 0, 1, 2");
 		SynergyNoti.setBounds(1550,190,300,30);
-		SynergyArea[0] = new JLabel("융합인재 시너지 : " + (fusionSynergy ? 1:0));
+		SynergyArea[0] = new JLabel("fusion synergy : " + (fusionSynergy ? 1:0));
 		SynergyArea[0].setFont(SynergyArea[0].getFont().deriveFont(20.0f));
 		SynergyArea[0].setBounds(1550,250,300,30);
-		SynergyArea[1] = new JLabel("문과대학 시너지 : " + SynergyTable[0]);
+		SynergyArea[1] = new JLabel("language synergy : " + SynergyTable[0]);
 		SynergyArea[1].setFont(SynergyArea[1].getFont().deriveFont(20.0f));
 		SynergyArea[1].setBounds(1550,280,300,30);
-		SynergyArea[2] = new JLabel("사회과학 대학 시너지 : " + SynergyTable[1]);
+		SynergyArea[2] = new JLabel("socialscience synergy : " + SynergyTable[1]);
 		SynergyArea[2].setFont(SynergyArea[2].getFont().deriveFont(20.0f));
 		SynergyArea[2].setBounds(1550,310,300,30);
-		SynergyArea[3] = new JLabel("자연과학 대학 시너지 : " + SynergyTable[2]);
+		SynergyArea[3] = new JLabel("naturescience synergy : " + SynergyTable[2]);
 		SynergyArea[3].setFont(SynergyArea[3].getFont().deriveFont(20.0f));
 		SynergyArea[3].setBounds(1550,340,300,30);
-		SynergyArea[4] = new JLabel("예술대학 시너지 : " + SynergyTable[3]);
+		SynergyArea[4] = new JLabel("art synergy : " + SynergyTable[3]);
 		SynergyArea[4].setFont(SynergyArea[4].getFont().deriveFont(20.0f));
 		SynergyArea[4].setBounds(1550,370,300,30);
-		SynergyArea[5] = new JLabel("공과대학 시너지 : " + SynergyTable[4]);
+		SynergyArea[5] = new JLabel("engineering synergy : " + SynergyTable[4]);
 		SynergyArea[5].setFont(SynergyArea[5].getFont().deriveFont(20.0f));
 		SynergyArea[5].setBounds(1550,400,300,30);
-		SynergyArea[6] = new JLabel("소프트웨어 대학 시너지 : " + SynergyTable[5]);
+		SynergyArea[6] = new JLabel("software synergy : " + SynergyTable[5]);
 		SynergyArea[6].setFont(SynergyArea[6].getFont().deriveFont(20.0f));
 		SynergyArea[6].setBounds(1550,430,300,30);
-		SynergyArea[7] = new JLabel("의과대학 시너지 : " + SynergyTable[6]);
+		SynergyArea[7] = new JLabel("medical synergy : " + SynergyTable[6]);
 		SynergyArea[7].setFont(SynergyArea[7].getFont().deriveFont(20.0f));
 		SynergyArea[7].setBounds(1550,460,300,30);
 
-		JLabel curRoundSynergy = new JLabel("현재 적용가능한 시너지는" + "")
+
+
+		JLabel curSynergy2 = new JLabel("possible Synergy , only this round");
+		curSynergy2.setFont(curSynergy2.getFont().deriveFont(20.0f));
+		curSynergy2.setBounds(1550,660,400,30);
+		add(curSynergy2);
+
+		curSynergy = new JLabel(curSyn);
+		curSynergy.setBounds(1650,700,300,30);
+		add(curSynergy);
 
 		add(SynergyNoti);
 		add(SynergyArea[0]);
@@ -420,21 +446,25 @@ class Frame extends JFrame {
 		add(text4);
 
 		// submit button
-		JButton submit = new JButton("제출하기!");
+		JButton submit = new JButton("submit");
 		submit.setBounds(1550,830,150,50);
 		submit.addActionListener(new submitButtonLister());
 		add(submit);
 
-		JButton howto = new JButton("게임방법");
+		JButton howto = new JButton("how to play");
 		howto.addActionListener(new howtoButtonListner());
 		howto.setBounds(1700,830,150,50);
 		add(howto);
 
 		//wallpaper image
 		ImageIcon wallpapers = new ImageIcon("src/image/white.png");
-		JLabel imagelabel = new JLabel(wallpapers);
-		imagelabel.setBounds(0,0,1000,700);
+		Image temp2 = wallpapers.getImage();
+		Image changedTemp2 = temp2.getScaledInstance(1920,1000,Image.SCALE_SMOOTH);
+		ImageIcon newChangeTemp = new ImageIcon(changedTemp2);
+		JLabel imagelabel = new JLabel(newChangeTemp);
+		imagelabel.setBounds(0,0,1920,1000);
 		add(imagelabel);
+
 		setSize(1920, 1000);
 		setVisible(true);
 	}
@@ -536,14 +566,14 @@ class Frame extends JFrame {
 
 		public void updateSynergy() {
 			CheckSynergy();
-			SynergyArea[0].setText("융합인재 시너지 : " + (fusionSynergy ? 1:0));
-			SynergyArea[1].setText("문과대학 시너지 : " + SynergyTable[0]);
-			SynergyArea[2].setText("사회과학 대학 시너지 : " + SynergyTable[1]);
-			SynergyArea[3].setText("자연과학 대학 시너지 : " + SynergyTable[2]);
-			SynergyArea[4].setText("예술대학 시너지 : " + SynergyTable[3]);
-			SynergyArea[5].setText("공과대학 시너지 : " + SynergyTable[4]);
-			SynergyArea[6].setText("소프트웨어 대학 시너지 : " + SynergyTable[5]);
-			SynergyArea[7].setText("의과대학 시너지 : " + SynergyTable[6]);
+			SynergyArea[0].setText("fusion synergy : " + (fusionSynergy ? 1:0));
+			SynergyArea[1].setText("language synergy : " + SynergyTable[0]);
+			SynergyArea[2].setText("socialscience synergy : " + SynergyTable[1]);
+			SynergyArea[3].setText("naturescience synergy : " + SynergyTable[2]);
+			SynergyArea[4].setText("art synergy : " + SynergyTable[3]);
+			SynergyArea[5].setText("engineering synergy : " + SynergyTable[4]);
+			SynergyArea[6].setText("software synergy : " + SynergyTable[5]);
+			SynergyArea[7].setText("medical synergy : " + SynergyTable[6]);
 		}
 
 		public void updateAllStore() {
@@ -560,13 +590,36 @@ class Frame extends JFrame {
 		public void updateRound() {
 			Gold+=10;
 			r.setText(Integer.toString(round+1));
+
+			tempFieldArr[0] = -1;
+			tempFieldArr[1] = -1;
+			tempFieldArr[2] = -1;
+
 			ImageIcon icon = new ImageIcon("src/image/enemy/"+Integer.toString(round+1) + ".PNG");
 			Image temp = icon.getImage();
 			Image changedTemp = temp.getScaledInstance(imagelabel2.getWidth(),imagelabel2.getHeight(),Image.SCALE_SMOOTH);
 			ImageIcon newIcon = new ImageIcon(changedTemp);
 			imagelabel2.setIcon(newIcon);
+
+			if(RoundType[round] == 0) {
+				curSyn = "language synergy";
+			}
+			else if(RoundType[round] == 1) {
+				curSyn = "socialscience synergy";
+			}else if(RoundType[round] == 2) {
+				curSyn = "engineering synergy";
+			}else if(RoundType[round] == 3) {
+				curSyn = "art synergy";
+			}else if(RoundType[round] == 4) {
+				curSyn = "naturescience synergy";
+			}else if(RoundType[round] == 5) {
+				curSyn = "software synergy";
+			}
+			curSynergy.setText(curSyn);
+
 			refreshShop();
 			updateGold();
+			updateField();
 			updateAllStore();
 		}
 	}
@@ -626,20 +679,7 @@ class Frame extends JFrame {
 	class howtoButtonListner implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String howtoText = "본게임은 카드를 이용하여 주어지는 점수를 넘기는 조합을 찾는게임입니다!\n " +
-					"각각의 카드는 기본적으로 10점을 가지고 있으며 여러가지 조합에 따라 점수가 늘어납니다.\n" +
-					"\n\n\n" +
-					"율전 시너지 : 율전학생과 명륜학생 카드가 각각 1장 이상이 필드 위에 있을 때 발동됩니다. Task Performance 가 2배가 됩니다.\n" +
-					"문과대학 시너지 : 발표 과제의 경우 , 문과대학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
-					"사회과학 시너지 : 에세이 과제의 경우 , 사회과학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
-					"자연과학 대학 시너지 : 수학과제의 경우 , 자연과학 대학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
-					"예술대학 시너지 : 예체능 과제의 경우 , 예술대학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
-					"공과대학 시너지 : 리포트 과제의 경우 , 공과대학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
-					"소프트웨어대학 시너지 : 코딩 과제의 경우, 소프트웨어 대학 소속 카드가 1장이라도 필드위에 있을 경우 Task Performance 가 99999가 됩니다!\n" +
-					"의과대학 시너지 : 의과대학 소속 카드가 필드위에 있을 경우 의과대학 소속 카드 한장에 한에 기본 점수가 30점이 됩니다 (10점에서 30점으로)\n" +
-					"\n\n\n" +
-					"위 와 같은 시너지를 각각의 과제에 맞추어 조합을 필드위에 올려 최종라운드인 24라운드 까지 완료하면 승리!";
-			JOptionPane.showMessageDialog(null,howtoText);
+			new HowTto();
 		}
 	}
 
