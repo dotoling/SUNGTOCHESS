@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Main {
 	public static void main(String[] args) {
-		int kindsOfCard = 2; // 카드 종류의 갯수
+		int kindsOfCard = 37; // 카드 종류의 갯수
 		int storage[] = new int[10];
 		int shop[] = new int[5];
 		int field[] = new int[3];
