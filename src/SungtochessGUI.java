@@ -10,21 +10,110 @@ import javax.swing.event.*;
 import javax.swing.ImageIcon.*;
 
 class Frame extends JFrame {
+	int Gold = 10;
+	int StorageCount = 0;
+	String Mode = "battle"; // default mode
+	int[][] StatTable = new int[10][3];
 	JButton[] shop;
 	JButton[] storage;
 	JButton[] field;
 	JLabel goldNum;
 	JLabel ModeText;
-	int Gold = 10;
-	int StorageCount = 0;
-	String Mode = "battle";
 	int[] tempShopArr;
 	int[] tempStorageArr;
 	int[] tempFieldArr;
+
+	int TaskPerformanceResult = 0;
+	int WillPowerResult = 0;
+	boolean fusionSynergy = false;
+//	LanguageSynergy, index 0
+//	NatureSynergy, index 1
+//	ArtSynergy, index 2
+//	EngineeringSynergy, index 3
+//	SoftwareSynergy, index 4
+//	DoctorSynergy, index 5
+	int[] SynergyTable = new int[6];
+
+	void setStat(int[][] statTableInput) {
+		for(int loopBool = 0; loopBool < 6; loopBool++) {
+			SynergyTable[loopBool] = 0;
+		}
+		// Task Performance , Will Power is fixed
+
+		// 율전 혹은 명륜 0 1
+		//[n][0] == 0 율전 [n][0] == 1 명륜
+
+		// 융합 인재 시너지 나중에 판단
+		// 문과대학 시너지 0 // 자연과학 시너지 1 // 예술대학 시너지 2 // 공과대학 시너지 3 // 소프트웨어 대학 시너지 4 // 의과 대학 시너지 5
+		// Synergy Table
+		statTableInput[0][0] = 0;
+		statTableInput[0][1] = 1;
+
+		statTableInput[1][0] = 1;
+		statTableInput[1][1] = 2;
+	}
+
+	void CheckSynergy() {
+		//reset SynergyTable for re-check
+		for(int loopBool = 0; loopBool < 6; loopBool++) {
+			SynergyTable[loopBool] = 0;
+		}
+
+		int card1 = tempFieldArr[0];
+		int card1Region = -1;
+		int card1College = -1;
+		int card2 = tempFieldArr[1];
+		int card2Region = -2;
+		int card2College = -2;
+		int card3 = tempFieldArr[2];
+		int card3Region = -3;
+		int card3College = -3;
+
+		if(card1!=-1) {
+			card1Region = StatTable[card1][0];
+			card1College = StatTable[card1][1];
+		}
+		if(card2!=-1) {
+			card2Region = StatTable[card2][0];
+			card2College = StatTable[card2][1];
+		}
+		if(card3!=-1) {
+			card3Region = StatTable[card3][0];
+			card3College = StatTable[card3][1];
+		}
+
+		// fusion check
+		if(card1Region != -1 && card2Region != -2 && (card1Region!=card2Region)) {
+			fusionSynergy = true;
+		} else if(card1Region != -1 && card3Region != -3 && (card1Region!=card3Region)) {
+			fusionSynergy = true;
+		} else if(card2Region != -2 && card3Region != -3 && (card2Region!=card3Region)) {
+			fusionSynergy = true;
+		}
+
+		if(card1College == card2College && card2College == card3College) {
+			SynergyTable[card2College] = 2; // Super Synergy
+		} else if(card1College == card2College) {
+			SynergyTable[card2College] = 1; // normal Synergy
+		} else if(card1College == card3College) {
+			SynergyTable[card1College] = 1; // normal Synergy
+		} else if(card2College == card3College) {
+			SynergyTable[card2College] = 1; // normal Synergy
+		}
+		// specific synergy
+		if(card1College == 4 || card2College == 4 || card3College == 4) {
+			SynergyTable[4] = 1;
+		}
+		if(card1College == 5 || card2College == 5 || card3College == 5) {
+			SynergyTable[5] = 1;
+		}
+	}
+
 	Frame(int[] ShopArr, int[] StorageArr, int[] FieldArr) {
 		tempShopArr = ShopArr;
 		tempStorageArr = StorageArr;
 		tempFieldArr = FieldArr;
+		setStat(StatTable);
 
 		setTitle("Sungtochess");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -128,10 +217,14 @@ class Frame extends JFrame {
 		{
 			if(tempFieldArr[i] == -1) {
 				field[i] = new JButton(new ImageIcon("src/image/empty.png"));
+				field[i].setName(Integer.toString(i));
+				field[i].addActionListener(new FieldButtonListener());
 				field[i].setBounds(400+150*i,175,150,100);
 				add(field[i]);
 			} else if(tempFieldArr[i] != -1) {
-				field[i] = new JButton(new ImageIcon("src/image/"+Integer.toString(tempStorageArr[i]) + ".png"));//Temporarily fill up to 0~1
+				field[i] = new JButton(new ImageIcon("src/image/"+Integer.toString(tempStorageArr[i]) + ".png"));
+				field[i].setName(Integer.toString(i));
+				field[i].addActionListener(new FieldButtonListener());
 				field[i].setBounds(400+150*i,175,150,100);
 				add(field[i]);
 			}
@@ -165,6 +258,7 @@ class Frame extends JFrame {
 			shop[index].setName(Integer.toString(-1));
 		}
 		public void updateStorage() {
+
 			for(int loop = 0; loop<10; loop++) {
 				if(tempStorageArr[loop] != -1) {
 					ImageIcon icon = new ImageIcon("src/image/"+Integer.toString(tempStorageArr[loop]) + ".png");
@@ -203,6 +297,9 @@ class Frame extends JFrame {
 					field[loop].setIcon(newIcon);
 				}
 			}
+			CheckSynergy();
+			Debug a = new Debug();
+			a.ShowSynergy();
 		}
 	}
 
@@ -328,6 +425,34 @@ class Frame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
+			String buttonName = ((JComponent)e.getSource()).getName();
+			if(tempFieldArr[Integer.parseInt(buttonName)] == -1) {
+				JOptionPane.showMessageDialog(null,"Empty Slot, you can't move back empty slot");
+			}
+			if(StorageCount==10) {
+				JOptionPane.showMessageDialog(null,"You can't move your chess to storage because your storage is full\n please sell your chess in your storage to return your chess");
+			}else {
+				int index = -1;
+				for(int loop = 0; loop < 10; loop++) {
+					if(tempStorageArr[loop] == -1) {
+						index = loop;
+						break;
+					}
+				}
+				if(index == -1) {
+					JOptionPane.showMessageDialog(null,"ERRRRRRRRRRRR!!!!!!!!!");
+				} else {
+					tempStorageArr[index] = tempFieldArr[Integer.parseInt(buttonName)];
+					for(int loopInit = Integer.parseInt(buttonName) ; loopInit < 2; loopInit++) {
+						tempFieldArr[loopInit] = tempFieldArr[loopInit + 1];
+					} tempFieldArr[tempFieldArr.length-1] = -1;
+					StorageCount +=1;
+					Update updatecheck = new Update();
+					updatecheck.updateStorage();
+					updatecheck.updateField();
+					repaint();
+				}
+			}
 		}
 	}
 	class Debug {
@@ -340,6 +465,13 @@ class Frame extends JFrame {
 			for(int loop2 = 0; loop2 < 5; loop2++) {
 				System.out.print(tempShopArr[loop2] + " ");
 			}System.out.println();
+		}
+		public void ShowSynergy() {
+			System.out.println(fusionSynergy);
+			for(int loop3 = 0; loop3<6; loop3++) {
+				System.out.println(SynergyTable[loop3]);
+			}
+
 		}
 	}
 }
