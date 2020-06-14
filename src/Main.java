@@ -5,9 +5,13 @@ public class Main {
 		int kindsOfCard = 2; // 카드 종류의 갯수
 		int storage[] = new int[10];
 		int shop[] = new int[5];
+		int field[] = new int[3];
 
 		for(int loop1 = 0; loop1<10; loop1++) {
 			storage[loop1] = -1;
+		}
+		for(int loop3 = 0; loop3<3; loop3++) {
+			field[loop3] = -1;
 		}
 
 		Random generator = new Random();
@@ -16,6 +20,6 @@ public class Main {
 			shop[loop2] = generator.nextInt(kindsOfCard);
 		}
 
-		Frame f = new Frame(shop,storage);
+		Frame f = new Frame(shop,storage,field);
 		}
 }

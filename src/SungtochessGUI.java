@@ -14,13 +14,17 @@ class Frame extends JFrame {
 	JButton[] storage;
 	JButton[] field;
 	JLabel goldNum;
+	JLabel ModeText;
 	int Gold = 10;
-	String Mode = "purchase";
+	int StorageCount = 0;
+	String Mode = "battle";
 	int[] tempShopArr;
 	int[] tempStorageArr;
-	Frame(int[] ShopArr, int[] StorageArr) {
+	int[] tempFieldArr;
+	Frame(int[] ShopArr, int[] StorageArr, int[] FieldArr) {
 		tempShopArr = ShopArr;
 		tempStorageArr = StorageArr;
+		tempFieldArr = FieldArr;
 
 		setTitle("Sungtochess");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,6 +53,10 @@ class Frame extends JFrame {
 		text3.setBounds(260,50,200,20);
 		add(text3);
 
+		ModeText = new JLabel(Mode);
+		ModeText.setBounds(460,50,200,20);
+		add(ModeText);
+
 		JLabel r = new JLabel("0");
 		r.setBounds(320,50,200,20);
 		add(r);
@@ -72,6 +80,11 @@ class Frame extends JFrame {
 		sb.setBounds(0,550,150,50);
 		add(sb);
 
+		JButton bb = new JButton("battle mode");
+		bb.addActionListener(new battleButtonListener());
+		bb.setBounds(0,600,150,50);
+		add(bb);
+
 		//shop image
 		shop = new JButton[5];
 		ImageIcon image = new ImageIcon("src/image/image.png");
@@ -81,7 +94,7 @@ class Frame extends JFrame {
 			shop[i] = new JButton(new ImageIcon("src/image/"+Integer.toString(tempShopArr[i]) + ".png"));
 			shop[i].addActionListener(new ShopButtonListener());
 			shop[i].setName(Integer.toString(tempShopArr[i]) + " " + Integer.toString(i));
-			shop[i].setBounds(200+150*i,500,150,100);
+			shop[i].setBounds(200+150*i,530,150,100);
 			add(shop[i]);
 		}
 
@@ -94,11 +107,13 @@ class Frame extends JFrame {
 			if(tempStorageArr[i] != -1) {
 				// img 의 이름은 곧 카드의 번호
 				storage[i] = new JButton(new ImageIcon("src/image/"+Integer.toString(tempStorageArr[i]) + ".png"));//Temporarily fill up to 0~4
+				storage[i].addActionListener(new StorageButtonListener());
 				storage[i].setName(Integer.toString(i));
 				storage[i].setBounds(200+75*i,400,75,50);
 				add(storage[i]);
 			} else if(tempStorageArr[i] == -1) {
 				storage[i] = new JButton(new ImageIcon("src/image/smallempty.png"));//Temporarily fill up to 0~4
+				storage[i].addActionListener(new StorageButtonListener());
 				storage[i].setName(Integer.toString(i));
 				storage[i].setBounds(200+75*i,400,75,50);
 				add(storage[i]);
@@ -109,25 +124,18 @@ class Frame extends JFrame {
 		field = new JButton[3];
 		ImageIcon tmp = new ImageIcon("src/image/field.png");
 
-		for(int i=0; i<2; i++)
-		{
-			field[i] = new JButton(tmp);//Temporarily fill up to 0~1
-		}
-
 		for(int i=0; i<3; i++)
 		{
-			if(field[i]==null) {
-				ImageIcon empty = new ImageIcon("src/image/empty.png");
-				JLabel imagelabel3 = new JLabel(empty);
-				imagelabel3.setBounds(400+150*i,175,150,100);
-				add(imagelabel3);
-			}
-			else {
+			if(tempFieldArr[i] == -1) {
+				field[i] = new JButton(new ImageIcon("src/image/empty.png"));
+				field[i].setBounds(400+150*i,175,150,100);
+				add(field[i]);
+			} else if(tempFieldArr[i] != -1) {
+				field[i] = new JButton(new ImageIcon("src/image/"+Integer.toString(tempStorageArr[i]) + ".png"));//Temporarily fill up to 0~1
 				field[i].setBounds(400+150*i,175,150,100);
 				add(field[i]);
 			}
 		}
-
 
 		//enemy image
 		ImageIcon enemy = new ImageIcon("src/image/enemy.png");
@@ -140,14 +148,13 @@ class Frame extends JFrame {
 		text4.setBounds(340,210,200,20);
 		add(text4);
 
-
 		//wallpaper image
 		ImageIcon wallpapers = new ImageIcon("src/image/white.png");
 		JLabel imagelabel = new JLabel(wallpapers);
-		imagelabel.setBounds(0,0,1000,600);
+		imagelabel.setBounds(0,0,1000,700);
 		add(imagelabel);
 
-		setSize(1000, 640);
+		setSize(1000, 700);
 		setVisible(true);
 	}
 
@@ -165,12 +172,37 @@ class Frame extends JFrame {
 					Image changedTemp = temp.getScaledInstance(storage[loop].getWidth(),storage[loop].getHeight(),Image.SCALE_SMOOTH);
 					ImageIcon newIcon = new ImageIcon(changedTemp);
 					storage[loop].setIcon(newIcon);
+				} else if(tempStorageArr[loop] == -1) {
+					ImageIcon icon = new ImageIcon("src/image/smallempty.png");
+					Image temp = icon.getImage();
+					Image changedTemp = temp.getScaledInstance(storage[loop].getWidth(),storage[loop].getHeight(),Image.SCALE_SMOOTH);
+					ImageIcon newIcon = new ImageIcon(changedTemp);
+					storage[loop].setIcon(newIcon);
 				}
 			}
 		}
 		public void updateGold() {
-			Gold -=3;
 			goldNum.setText(Integer.toString(Gold));
+		}
+		public void updateMode() {
+			ModeText.setText(Mode);
+		}
+		public void updateField() {
+			for(int loop = 0; loop<3; loop++) {
+				if(tempFieldArr[loop] != -1) {
+					ImageIcon icon = new ImageIcon("src/image/"+Integer.toString(tempFieldArr[loop]) + ".png");
+					Image temp = icon.getImage();
+					Image changedTemp = temp.getScaledInstance(field[loop].getWidth(),field[loop].getHeight(),Image.SCALE_SMOOTH);
+					ImageIcon newIcon = new ImageIcon(changedTemp);
+					field[loop].setIcon(newIcon);
+				} else if(tempFieldArr[loop] == -1) {
+					ImageIcon icon = new ImageIcon("src/image/empty.png");
+					Image temp = icon.getImage();
+					Image changedTemp = temp.getScaledInstance(field[loop].getWidth(),field[loop].getHeight(),Image.SCALE_SMOOTH);
+					ImageIcon newIcon = new ImageIcon(changedTemp);
+					field[loop].setIcon(newIcon);
+				}
+			}
 		}
 	}
 
@@ -179,7 +211,19 @@ class Frame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Mode = "purchase";
-			System.out.println(Mode);
+			Update updateCheck = new Update();
+			updateCheck.updateMode();
+			repaint();
+		}
+	}
+
+	class battleButtonListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Mode = "battle";
+			Update updateCheck = new Update();
+			updateCheck.updateMode();
+			repaint();
 		}
 	}
 
@@ -187,7 +231,9 @@ class Frame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Mode = "sale";
-			System.out.println(Mode);
+			Update updateCheck = new Update();
+			updateCheck.updateMode();
+			repaint();
 		}
 	}
 
@@ -195,7 +241,6 @@ class Frame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String[] buttonName = ((JComponent)e.getSource()).getName().split(" ");
-
 			if(Mode.equals("sale")) {
 				JOptionPane.showMessageDialog(null,"Your mode is SALE, Please check your mode");
 			} else if (Mode.equals("purchase")) {
@@ -203,6 +248,8 @@ class Frame extends JFrame {
 					JOptionPane.showMessageDialog(null,"Already purchased item");
 				} else if (Gold - 3 < 0) {
 					JOptionPane.showMessageDialog(null,"Gold is not enough");
+				} else if (StorageCount == 10) {
+					JOptionPane.showMessageDialog(null,"Storage is full");
 				}
 				else {
 					int index = -1;
@@ -214,19 +261,67 @@ class Frame extends JFrame {
 					}
 					tempStorageArr[index] = Integer.parseInt(buttonName[0]);
 					tempShopArr[Integer.parseInt(buttonName[1])] = -1;
+					Gold-=3;
 					Update b = new Update();
 					b.updateStore(Integer.parseInt(buttonName[1]));
 					b.updateStorage();
 					b.updateGold();
+					StorageCount+=1;
 					repaint();
 				}
+			} else if(Mode.equals("battle")) {
+				JOptionPane.showMessageDialog(null,"Your mode is BATTLE, Please check your mode");
 			}
 		}
 	}
 	class StorageButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			String buttonName = ((JComponent)e.getSource()).getName();
+			if(Mode.equals("battle")) {
+				if(tempStorageArr[Integer.parseInt(buttonName)] == -1) {
+					JOptionPane.showMessageDialog(null,"Empty Slot, you can't export empty to field");
+				}
+				int index = -1;
+				for(int looptem = 0; looptem<3; looptem++){
+					if(tempFieldArr[looptem]==-1) {
+						index = looptem;
+						break;
+					}
+				}
+				if(index == -1) {
+					JOptionPane.showMessageDialog(null,"Field is full");
+				} else {
+					tempFieldArr[index] = tempStorageArr[Integer.parseInt(buttonName)];
+					for(int loopInit = Integer.parseInt(buttonName) ; loopInit < 9; loopInit++) {
+						tempStorageArr[loopInit] = tempStorageArr[loopInit + 1];
+					} tempStorageArr[tempStorageArr.length-1] = -1;
+					StorageCount-=1;
+					Update updateCheck = new Update();
+					updateCheck.updateStorage();
+					updateCheck.updateField();
+					repaint();
+				}
 
+			} else if(Mode.equals("sale")) {
+				if(tempStorageArr[Integer.parseInt(buttonName)] == -1) {
+					JOptionPane.showMessageDialog(null,"Empty Slot, you can't sell empty");
+				} else {
+					for(int loopInit = Integer.parseInt(buttonName) ; loopInit < 9; loopInit++) {
+						tempStorageArr[loopInit] = tempStorageArr[loopInit + 1];
+					} tempStorageArr[tempStorageArr.length-1] = -1;
+					StorageCount-=1;
+					Gold+=3;
+					Update updateCheck = new Update();
+					updateCheck.updateStorage();
+					updateCheck.updateGold();
+					repaint();
+				}
+			} else if(Mode.equals("purchase")) {
+				JOptionPane.showMessageDialog(null,"Your mode is PURCHASE, Please check your mode");
+			} else {
+				JOptionPane.showMessageDialog(null,"ERRRRRRR!!!!!!!!!");
+			}
 		}
 	}
 	class FieldButtonListener implements ActionListener {
