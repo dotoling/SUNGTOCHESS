@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.ImageIcon.*;
+import java.util.Random;
 
 class Frame extends JFrame {
 	int Gold = 10;
@@ -20,8 +21,11 @@ class Frame extends JFrame {
 	JButton[] field;
 	JLabel[] SynergyArea;
 	JLabel goldNum;
+	JLabel imagelabel2;
 	JLabel ModeText;
 	JLabel tp;
+	JLabel r;
+
 	int[] tempShopArr;
 	int[] tempStorageArr;
 	int[] tempFieldArr;
@@ -30,6 +34,7 @@ class Frame extends JFrame {
 	boolean fusionSynergy = false;
 	int[] SynergyTable = new int[7];
 	int[] RoundType = {0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5}; // 발표 - 에세이 - 리포트 - 예체능 - 수학 - 코딩
+	int[] RoundTarget = {5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120};
 	int round = 0;
 
 	void setStat(int[][] statTableInput) {
@@ -156,11 +161,19 @@ class Frame extends JFrame {
 		statTableInput[36][1] = 5;
 	}
 
+	void refreshShop() {
+		int kindsOfCard = 37; // 카드 종류의 갯수
+		Random generator = new Random();
+		for(int loop2 = 0; loop2 < 5; loop2++) {
+			tempShopArr[loop2] = generator.nextInt(kindsOfCard);
+		}
+	}
+
 	void CheckSynergy() {
 		//reset SynergyTable for re-check
 		for(int loopBool = 0; loopBool < 7; loopBool++) {
 			SynergyTable[loopBool] = 0;
-		}
+		} fusionSynergy = false;
 
 		int card1 = tempFieldArr[0];
 		int card1Region = -1;
@@ -244,7 +257,7 @@ class Frame extends JFrame {
 		ModeText.setBounds(930,50,200,20);
 		add(ModeText);
 
-		JLabel r = new JLabel("0");
+		r = new JLabel(Integer.toString(round+1));
 		r.setBounds(340,50,200,20);
 		add(r);
 
@@ -329,11 +342,11 @@ class Frame extends JFrame {
 		for(int i=0; i<3; i++)
 		{
 			if(tempFieldArr[i] == -1) {
-				ImageIcon icon = new ImageIcon("src/image/empty.png");
+				ImageIcon icon = new ImageIcon("src/image/empty.PNG");
 				Image temp = icon.getImage();
 				Image changedTemp = temp.getScaledInstance(150,100,Image.SCALE_SMOOTH);
 				ImageIcon newIcon = new ImageIcon(changedTemp);
-				field[i] = new JButton(new ImageIcon("src/image/empty.png"));
+				field[i] = new JButton(newIcon);
 				field[i].setName(Integer.toString(i));
 				field[i].addActionListener(new FieldButtonListener());
 				field[i].setBounds(950+150*i,175,150,100);
@@ -380,6 +393,8 @@ class Frame extends JFrame {
 		SynergyArea[7].setFont(SynergyArea[7].getFont().deriveFont(20.0f));
 		SynergyArea[7].setBounds(1550,460,300,30);
 
+		JLabel curRoundSynergy = new JLabel("현재 적용가능한 시너지는" + "")
+
 		add(SynergyNoti);
 		add(SynergyArea[0]);
 		add(SynergyArea[1]);
@@ -391,9 +406,12 @@ class Frame extends JFrame {
 		add(SynergyArea[7]);
 
 		//enemy image
-		ImageIcon enemy = new ImageIcon("src/image/enemy.png");
-		JLabel imagelabel2 = new JLabel(enemy);
-		imagelabel2.setBounds(560,150,200,150);
+		ImageIcon enemy = new ImageIcon("src/image/enemy/" + (round+1) + ".PNG");
+		Image temp = enemy.getImage();
+		Image changedTemp = temp.getScaledInstance(300,200,Image.SCALE_SMOOTH);
+		ImageIcon newIcon = new ImageIcon(changedTemp);
+		imagelabel2 = new JLabel(newIcon);
+		imagelabel2.setBounds(460,120,300,200);
 		add(imagelabel2);
 
 		//vs text
@@ -401,12 +419,22 @@ class Frame extends JFrame {
 		text4.setBounds(850,210,200,20);
 		add(text4);
 
+		// submit button
+		JButton submit = new JButton("제출하기!");
+		submit.setBounds(1550,830,150,50);
+		submit.addActionListener(new submitButtonLister());
+		add(submit);
+
+		JButton howto = new JButton("게임방법");
+		howto.addActionListener(new howtoButtonListner());
+		howto.setBounds(1700,830,150,50);
+		add(howto);
+
 		//wallpaper image
 		ImageIcon wallpapers = new ImageIcon("src/image/white.png");
 		JLabel imagelabel = new JLabel(wallpapers);
 		imagelabel.setBounds(0,0,1000,700);
 		add(imagelabel);
-
 		setSize(1920, 1000);
 		setVisible(true);
 	}
@@ -430,7 +458,7 @@ class Frame extends JFrame {
 					ImageIcon newIcon = new ImageIcon(changedTemp);
 					storage[loop].setIcon(newIcon);
 				} else if(tempStorageArr[loop] == -1) {
-					ImageIcon icon = new ImageIcon("src/image/empty.png");
+					ImageIcon icon = new ImageIcon("src/image/empty.PNG");
 					Image temp = icon.getImage();
 					Image changedTemp = temp.getScaledInstance(storage[loop].getWidth(),storage[loop].getHeight(),Image.SCALE_SMOOTH);
 					ImageIcon newIcon = new ImageIcon(changedTemp);
@@ -456,7 +484,7 @@ class Frame extends JFrame {
 					field[loop].setIcon(newIcon);
 					fieldCount+=1;
 				} else if(tempFieldArr[loop] == -1) {
-					ImageIcon icon = new ImageIcon("src/image/empty.png");
+					ImageIcon icon = new ImageIcon("src/image/empty.PNG");
 					Image temp = icon.getImage();
 					Image changedTemp = temp.getScaledInstance(field[loop].getWidth(),field[loop].getHeight(),Image.SCALE_SMOOTH);
 					ImageIcon newIcon = new ImageIcon(changedTemp);
@@ -482,9 +510,9 @@ class Frame extends JFrame {
 			} else if(SynergyTable[1] == 1 && RoundType[round] == 1) {
 				TaskPerformanceResult*=2;
 			}
-			if(SynergyTable[2] == 2 && RoundType[round] == 2) {
+			if(SynergyTable[2] == 2 && RoundType[round] == 4) {
 				TaskPerformanceResult*=3;
-			} else if(SynergyTable[2] == 1 && RoundType[round] == 2) {
+			} else if(SynergyTable[2] == 1 && RoundType[round] == 4) {
 				TaskPerformanceResult*=2;
 			}
 
@@ -494,9 +522,9 @@ class Frame extends JFrame {
 				TaskPerformanceResult*=2;
 			}
 
-			if(SynergyTable[4] == 2 && RoundType[round] == 4) {
+			if(SynergyTable[4] == 2 && RoundType[round] == 2) {
 				TaskPerformanceResult*=3;
-			} else if(SynergyTable[4] == 1 && RoundType[round] == 4) {
+			} else if(SynergyTable[4] == 1 && RoundType[round] == 2) {
 				TaskPerformanceResult*=2;
 			}
 
@@ -505,6 +533,7 @@ class Frame extends JFrame {
 			}
 			tp.setText(Integer.toString(TaskPerformanceResult));
 		}
+
 		public void updateSynergy() {
 			CheckSynergy();
 			SynergyArea[0].setText("융합인재 시너지 : " + (fusionSynergy ? 1:0));
@@ -516,8 +545,31 @@ class Frame extends JFrame {
 			SynergyArea[6].setText("소프트웨어 대학 시너지 : " + SynergyTable[5]);
 			SynergyArea[7].setText("의과대학 시너지 : " + SynergyTable[6]);
 		}
-	}
 
+		public void updateAllStore() {
+			for(int loopindex = 0; loopindex<5; loopindex++) {
+				ImageIcon icon = new ImageIcon("src/image/"+Integer.toString(tempShopArr[loopindex]) + ".PNG");
+				Image temp2 = icon.getImage();
+				Image changedTemp2 = temp2.getScaledInstance(shop[loopindex].getWidth(),shop[loopindex].getHeight(),Image.SCALE_SMOOTH);
+				ImageIcon newIcon = new ImageIcon(changedTemp2);
+				shop[loopindex].setIcon(newIcon);
+				shop[loopindex].setName(Integer.toString(tempShopArr[loopindex]) + " " + loopindex);
+			}
+		}
+
+		public void updateRound() {
+			Gold+=10;
+			r.setText(Integer.toString(round+1));
+			ImageIcon icon = new ImageIcon("src/image/enemy/"+Integer.toString(round+1) + ".PNG");
+			Image temp = icon.getImage();
+			Image changedTemp = temp.getScaledInstance(imagelabel2.getWidth(),imagelabel2.getHeight(),Image.SCALE_SMOOTH);
+			ImageIcon newIcon = new ImageIcon(changedTemp);
+			imagelabel2.setIcon(newIcon);
+			refreshShop();
+			updateGold();
+			updateAllStore();
+		}
+	}
 
 	class purchaseButtonListener implements ActionListener {
 		@Override
@@ -546,6 +598,48 @@ class Frame extends JFrame {
 			Update updateCheck = new Update();
 			updateCheck.updateMode();
 			repaint();
+		}
+	}
+
+	class submitButtonLister implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(RoundTarget[round] <= TaskPerformanceResult) {
+				if(round==23) {
+					JOptionPane.showMessageDialog(null,"You Win");
+					System.exit(0);
+				} else {
+					JOptionPane.showMessageDialog(null,"PASS!!");
+					round+=1;
+					Update updatecheck = new Update();
+					updatecheck.updateRound();
+					repaint();
+				}
+			} else {
+				JOptionPane.showMessageDialog(null,"Your Score is lower than Difficulty");
+				JOptionPane.showMessageDialog(null,"Game Over");
+				System.exit(0);
+			}
+		}
+	}
+
+	class howtoButtonListner implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String howtoText = "본게임은 카드를 이용하여 주어지는 점수를 넘기는 조합을 찾는게임입니다!\n " +
+					"각각의 카드는 기본적으로 10점을 가지고 있으며 여러가지 조합에 따라 점수가 늘어납니다.\n" +
+					"\n\n\n" +
+					"율전 시너지 : 율전학생과 명륜학생 카드가 각각 1장 이상이 필드 위에 있을 때 발동됩니다. Task Performance 가 2배가 됩니다.\n" +
+					"문과대학 시너지 : 발표 과제의 경우 , 문과대학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
+					"사회과학 시너지 : 에세이 과제의 경우 , 사회과학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
+					"자연과학 대학 시너지 : 수학과제의 경우 , 자연과학 대학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
+					"예술대학 시너지 : 예체능 과제의 경우 , 예술대학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
+					"공과대학 시너지 : 리포트 과제의 경우 , 공과대학 소속 카드가 2장 혹은 3장이 필드 위에 있을 경우 각각 Task Performance가 2배, 3배가 됩니다!\n" +
+					"소프트웨어대학 시너지 : 코딩 과제의 경우, 소프트웨어 대학 소속 카드가 1장이라도 필드위에 있을 경우 Task Performance 가 99999가 됩니다!\n" +
+					"의과대학 시너지 : 의과대학 소속 카드가 필드위에 있을 경우 의과대학 소속 카드 한장에 한에 기본 점수가 30점이 됩니다 (10점에서 30점으로)\n" +
+					"\n\n\n" +
+					"위 와 같은 시너지를 각각의 과제에 맞추어 조합을 필드위에 올려 최종라운드인 24라운드 까지 완료하면 승리!";
+			JOptionPane.showMessageDialog(null,howtoText);
 		}
 	}
 
@@ -586,6 +680,7 @@ class Frame extends JFrame {
 			}
 		}
 	}
+
 	class StorageButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -614,7 +709,6 @@ class Frame extends JFrame {
 					updateCheck.updateField();
 					repaint();
 				}
-
 			} else if(Mode.equals("sale")) {
 				if(tempStorageArr[Integer.parseInt(buttonName)] == -1) {
 					JOptionPane.showMessageDialog(null,"Empty Slot, you can't sell empty");
@@ -636,6 +730,7 @@ class Frame extends JFrame {
 			}
 		}
 	}
+
 	class FieldButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -669,6 +764,7 @@ class Frame extends JFrame {
 			}
 		}
 	}
+
 	class Debug {
 		public void ShowArr() {
 			System.out.println("tempStorageArr");
@@ -685,7 +781,7 @@ class Frame extends JFrame {
 			for(int loop3 = 0; loop3<6; loop3++) {
 				System.out.println(SynergyTable[loop3]);
 			}
-
 		}
 	}
+
 }
